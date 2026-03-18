@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HAKUNA!! — Anime & Figuras</title>
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=DM+Mono:wght@300;400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --paper: #f7f4ef;
+      --paper2: #f0ece4;
+      --ink: #1a1814;
+      --ink2: #2e2b26;
+      --vermilion: #c0392b;
+      --vermilion2: #e74c3c;
+      --ash: #9a9488;
+      --smoke: #d4cfc6;
+      --smoke2: #e8e3da;
+      --charcoal: #4a4640;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── KANJI WATERMARK ── */
+    body::before {
+      content: '刀';
+      position: fixed;
+      right: -0.05em;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Shippori Mincho', serif;
+      font-size: 32vw;
+      color: rgba(26,24,20,0.022);
+      pointer-events: none;
+      z-index: 0;
+      line-height: 1;
+      user-select: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(247,244,239,0.94);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--smoke);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 3.5rem; height: 62px;
+    }
+    .logo-wrap {
+      display: flex; align-items: center; gap: 1rem;
+      text-decoration: none; color: inherit;
+    }
+    .logo-img {
+      width: 38px; height: 38px; object-fit: contain;
+    }
+    .logo-type { display: flex; flex-direction: column; line-height: 1; }
+    .logo-jp {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.25rem; font-weight: 700;
+      letter-spacing: .06em; color: var(--ink);
+    }
+    .logo-jp em { color: var(--vermilion); font-style: normal; }
+    .logo-en {
+      font-family: 'DM Mono', monospace;
+      font-size: .55rem; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--ash);
+      margin-top: 1px;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--ash); text-decoration: none;
+      font-family: 'DM Mono', monospace;
+      font-size: .7rem; letter-spacing: .14em; text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .cart-btn {
+      display: flex; align-items: center; gap: .5rem;
+      background: none; border: 1px solid var(--ink);
+      color: var(--ink); padding: .4rem 1.1rem;
+      font-family: 'DM Mono', monospace;
+      font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+      cursor: pointer; transition: all .25s;
+    }
+    .cart-btn:hover {
+      background: var(--ink); color: var(--paper);
+    }
+    #cart-count {
+      background: var(--vermilion); color: #fff;
+      border-radius: 50%; width: 18px; height: 18px;
+      display: inline-flex; align-items: center;
+      justify-content: center; font-size: .65rem;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: 1fr 1px 1fr;
+      min-height: 420px; border-bottom: 1px solid var(--smoke);
+      background-image: url('manga-bg.jpg');
+      background-size: cover;
+      background-position: center top;
+    }
+    /* overlay oscuro sutil sobre toda la imagen */
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.38);
+      z-index: 0; pointer-events: none;
+    }
+    .hero-left, .hero-divider, .hero-right {
+      position: relative; z-index: 1;
+    }
+    .hero-left {
+      padding: 5rem 4rem 5rem 3.5rem;
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .hero-divider {
+      background: rgba(255,255,255,.2); width: 1px;
+      margin: 3rem 0;
+    }
+    .hero-right {
+      padding: 5rem 3.5rem 5rem 4rem;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .hero-label {
+      font-family: 'DM Mono', monospace;
+      font-size: .65rem; letter-spacing: .25em;
+      text-transform: uppercase; color: #ff6b5b;
+      margin-bottom: 1.5rem;
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.644);
+      padding: .2rem .6rem;
+    }
+    .hero-label::before { content: '— '; }
+    .hero h1 {
+      font-family: 'Shippori Mincho', serif;
+      font-size: clamp(2.8rem, 5vw, 4.5rem);
+      font-weight: 600; line-height: 1.2;
+      letter-spacing: -.01em; color: #fff;
+      display: inline;
+      background: rgba(0, 0, 0, 0.801);
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      padding: .05em .18em;
+    }
+    .hero h1 .kanji {
+      display: block; font-size: .45em;
+      color: rgba(255,255,255,.75); letter-spacing: .08em;
+      margin-bottom: .4rem;
+      background: rgba(0, 0, 0, 0.877);
+      padding: .15em .5em;
+      width: fit-content;
+    }
+    .hero-tagline {
+      font-size: .88rem; color: rgba(255,255,255,.9);
+      line-height: 1.85; max-width: 340px; margin-top: 1.5rem;
+      font-weight: 400;
+      background: rgba(0, 0, 0, 0.596);
+      padding: .7rem 1rem;
+    }
+    .hero-stats {
+      display: flex; gap: 3rem;
+    }
+    .stat-item {
+      background: rgba(0, 0, 0, 0.87);
+      padding: .6rem 1rem;
+    }
+    .stat-num {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 2.2rem; font-weight: 600;
+      color: #fff; line-height: 1;
+    }
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: .6rem; letter-spacing: .16em;
+      text-transform: uppercase; color: rgba(255,255,255,.6);
+      margin-top: .2rem;
+    }
+    .hero-quote {
+      font-family: 'Shippori Mincho', serif;
+      font-size: .95rem; color: rgba(255,255,255,.8);
+      font-style: italic; line-height: 1.8;
+      border-left: 2px solid rgba(255,255,255,.3);
+      padding: .6rem 1rem .6rem 1.2rem;
+      background: rgba(0, 0, 0, 0.685);
+    }
+
+    /* ── FILTERS ── */
+    .filters-section {
+      position: sticky; top: 62px; z-index: 90;
+      background: var(--paper2);
+      border-bottom: 1px solid var(--smoke);
+      padding: 0 3.5rem;
+    }
+    .filters-inner {
+      display: flex; align-items: center; gap: 0;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .filters-inner::-webkit-scrollbar { display: none; }
+    .filter-group-label {
+      font-family: 'DM Mono', monospace;
+      font-size: .6rem; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--smoke);
+      padding: 1rem 1.2rem 1rem 0; white-space: nowrap;
+      border-right: 1px solid var(--smoke); margin-right: 1.2rem;
+    }
+    .filter-btn {
+      background: none; border: none;
+      font-family: 'DM Mono', monospace;
+      font-size: .68rem; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--ash);
+      padding: 1.05rem 1rem; cursor: pointer;
+      transition: all .2s; white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      position: relative; top: 1px;
+    }
+    .filter-btn:hover { color: var(--ink); }
+    .filter-btn.active {
+      color: var(--ink); border-bottom-color: var(--ink);
+      font-weight: 400;
+    }
+    .filter-btn.anime-active {
+      color: var(--vermilion);
+      border-bottom-color: var(--vermilion);
+    }
+    .filter-sep {
+      width: 1px; height: 24px;
+      background: var(--smoke); margin: 0 .5rem;
+      flex-shrink: 0;
+    }
+
+    /* ── CATALOG ── */
+    .catalog { position: relative; z-index: 1; padding: 3.5rem; }
+    .catalog-head {
+      display: flex; justify-content: space-between;
+      align-items: baseline; margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--smoke); padding-bottom: 1rem;
+    }
+    .catalog-head h2 {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.4rem; font-weight: 500; letter-spacing: .04em;
+    }
+    .catalog-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: .65rem; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--ash);
+    }
+
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px; background: transparent;
+      border: none;
+    }
+    .card {
+      background: var(--paper);
+      cursor: pointer;
+      transition: background .2s, box-shadow .2s;
+      position: relative; overflow: hidden;
+      border: 1px solid var(--smoke);
+    }
+    .card:hover { background: var(--paper2); box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+    .card-img {
+      width: 100%; aspect-ratio: 1/1;
+      background: var(--paper2);
+      display: flex; align-items: center;
+      justify-content: center; font-size: 4.5rem;
+      position: relative;
+      border-bottom: 1px solid var(--smoke);
+      overflow: hidden;
+    }
+    .card-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s ease;
+    }
+    .card:hover .card-img img { transform: scale(1.04); }
+    .card-img .emoji-fallback {
+      font-size: 4.5rem;
+    }
+    .card-img::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 55%, rgba(247,244,239,.5) 100%);
+      pointer-events: none;
+    }
+    .badge-new {
+      position: absolute; top: .8rem; left: .8rem;
+      font-family: 'DM Mono', monospace;
+      font-size: .58rem; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--vermilion);
+      border: 1px solid var(--vermilion); padding: .2rem .5rem;
+      background: var(--paper); z-index: 1;
+    }
+    .badge-anime {
+      position: absolute; bottom: .8rem; right: .8rem;
+      font-family: 'DM Mono', monospace;
+      font-size: .56rem; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--ash);
+      background: rgba(247,244,239,.9);
+      border: 1px solid var(--smoke); padding: .2rem .5rem; z-index: 1;
+    }
+    .card-body { padding: 1.2rem 1.3rem; }
+    .card-cat {
+      font-family: 'DM Mono', monospace;
+      font-size: .58rem; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--ash); margin-bottom: .4rem;
+    }
+    .card-name {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1rem; font-weight: 500;
+      line-height: 1.4; margin-bottom: 1rem; color: var(--ink);
+    }
+    .card-footer {
+      display: flex; justify-content: space-between;
+      align-items: center;
+    }
+    .card-price {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.1rem; font-weight: 600; color: #2d7a4a;
+    }
+    .add-btn {
+      background: none; border: 1px solid var(--smoke);
+      color: var(--charcoal); padding: .38rem .85rem;
+      font-family: 'DM Mono', monospace;
+      font-size: .62rem; letter-spacing: .08em;
+      text-transform: uppercase; cursor: pointer; transition: all .2s;
+    }
+    .add-btn:hover {
+      border-color: var(--vermilion);
+      color: var(--vermilion);
+      background: rgba(192,57,43,.04);
+    }
+    .state-msg {
+      grid-column: 1/-1; text-align: center;
+      padding: 6rem; color: var(--ash); background: var(--paper);
+    }
+    .state-msg .icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: .5; }
+    .state-msg p {
+      font-family: 'DM Mono', monospace;
+      font-size: .75rem; letter-spacing: .12em; text-transform: uppercase;
+    }
+
+    /* ── CART PANEL ── */
+    .overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(26,24,20,.45); z-index: 200;
+      backdrop-filter: blur(3px);
+    }
+    .overlay.open { display: block; }
+    .cart-panel {
+      position: fixed; top: 0; right: 0;
+      width: 400px; max-width: 100vw; height: 100vh;
+      background: var(--paper); z-index: 201;
+      transform: translateX(110%);
+      transition: transform .38s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+      border-left: 1px solid var(--smoke);
+    }
+    .cart-panel.open { transform: translateX(0); }
+    .cart-head {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--smoke);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .cart-head h3 {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.2rem; font-weight: 600; letter-spacing: .04em;
+    }
+    .close-x {
+      background: none; border: none; color: var(--ash);
+      font-size: 1.1rem; cursor: pointer; transition: color .2s;
+      font-family: 'DM Mono', monospace;
+    }
+    .close-x:hover { color: var(--ink); }
+    .cart-body { flex: 1; overflow-y: auto; padding: 1.5rem 2rem; }
+    .cart-empty-msg {
+      text-align: center; color: var(--ash);
+      padding: 4rem 0;
+      font-family: 'DM Mono', monospace;
+      font-size: .7rem; letter-spacing: .14em; text-transform: uppercase;
+    }
+    .cart-empty-msg .icon { font-size: 2rem; margin-bottom: 1rem; display: block; opacity: .5; }
+    .cart-item {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1.1rem 0; border-bottom: 1px solid var(--smoke2);
+    }
+    .ci-emoji {
+      font-size: 1.8rem; min-width: 52px; width: 52px; height: 52px;
+      text-align: center; background: var(--paper2);
+      overflow: hidden; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ci-emoji img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .ci-info { flex: 1; }
+    .ci-name {
+      font-family: 'Shippori Mincho', serif;
+      font-size: .95rem; font-weight: 500; margin-bottom: .15rem;
+    }
+    .ci-anime {
+      font-family: 'DM Mono', monospace;
+      font-size: .6rem; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--vermilion); margin-bottom: .3rem;
+    }
+    .ci-price { color: var(--ash); font-size: .85rem; }
+    .ci-qty {
+      display: flex; align-items: center; gap: .5rem; margin-top: .5rem;
+    }
+    .qty-btn {
+      background: none; border: 1px solid var(--smoke);
+      color: var(--charcoal); width: 22px; height: 22px;
+      cursor: pointer; font-size: .85rem; display: flex;
+      align-items: center; justify-content: center; transition: all .2s;
+    }
+    .qty-btn:hover { border-color: var(--ink); }
+    .qty-num {
+      font-family: 'DM Mono', monospace;
+      font-size: .8rem; min-width: 20px; text-align: center;
+    }
+    .ci-remove {
+      background: none; border: none; color: var(--smoke);
+      cursor: pointer; font-size: .9rem; transition: color .2s;
+      font-family: 'DM Mono', monospace; padding: .2rem;
+    }
+    .ci-remove:hover { color: var(--vermilion); }
+    .cart-foot {
+      padding: 1.5rem 2rem; border-top: 1px solid var(--smoke);
+    }
+    .cart-total-row {
+      display: flex; justify-content: space-between;
+      align-items: baseline; margin-bottom: 1.2rem;
+    }
+    .cart-total-row span:first-child {
+      font-family: 'DM Mono', monospace;
+      font-size: .65rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ash);
+    }
+    .cart-total-row span:last-child {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.6rem; font-weight: 600; color: var(--ink);
+    }
+    .checkout-btn {
+      width: 100%; background: var(--ink); color: var(--paper);
+      border: none; padding: 1rem;
+      font-family: 'DM Mono', monospace;
+      font-size: .72rem; letter-spacing: .16em; text-transform: uppercase;
+      cursor: pointer; transition: background .2s;
+    }
+    .checkout-btn:hover { background: var(--ink2); }
+    .mp-note {
+      text-align: center; font-family: 'DM Mono', monospace;
+      font-size: .6rem; color: var(--ash); margin-top: .8rem; letter-spacing: .06em;
+    }
+
+    /* ── MODAL ── */
+    .modal-wrap {
+      display: none; position: fixed; inset: 0;
+      background: rgba(26,24,20,.55); z-index: 300;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-wrap.open { display: flex; }
+    .modal {
+      background: var(--paper); border: 1px solid var(--smoke);
+      width: 500px; max-width: 96vw; max-height: 92vh;
+      overflow-y: auto; padding: 2.8rem;
+      animation: up .3s ease;
+    }
+    @keyframes up { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    .modal-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: .6rem; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--vermilion);
+      margin-bottom: .6rem;
+    }
+    .modal h3 {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.7rem; font-weight: 600;
+      margin-bottom: .4rem; letter-spacing: .02em;
+    }
+    .modal-sub {
+      color: var(--ash); font-size: .82rem;
+      line-height: 1.75; margin-bottom: 2rem;
+    }
+    .fg { margin-bottom: 1rem; }
+    .fg label {
+      display: block; font-family: 'DM Mono', monospace;
+      font-size: .6rem; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--ash); margin-bottom: .4rem;
+    }
+    .fg input {
+      width: 100%; background: var(--paper2);
+      border: 1px solid var(--smoke); color: var(--ink);
+      padding: .72rem 1rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: .9rem; font-weight: 300; outline: none; transition: border .2s;
+    }
+    .fg input:focus { border-color: var(--ink); }
+    .fg input::placeholder { color: var(--smoke); }
+    .order-summary {
+      background: var(--paper2); border: 1px solid var(--smoke);
+      padding: 1.1rem 1.3rem; margin: 1.2rem 0;
+      font-size: .85rem; line-height: 2; color: var(--charcoal);
+    }
+    .modal-actions { display: flex; gap: .8rem; margin-top: 1.5rem; }
+    .btn-cancel {
+      flex: 1; padding: .85rem; border: 1px solid var(--smoke);
+      background: none; font-family: 'DM Mono', monospace;
+      font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
+      cursor: pointer; color: var(--ash); transition: all .2s;
+    }
+    .btn-cancel:hover { border-color: var(--charcoal); color: var(--ink); }
+    .btn-confirm {
+      flex: 2; padding: .85rem; background: var(--vermilion);
+      color: #fff; border: none;
+      font-family: 'DM Mono', monospace;
+      font-size: .65rem; letter-spacing: .12em; text-transform: uppercase;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-confirm:hover { background: var(--vermilion2); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--smoke);
+      padding: 2.5rem 3.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-logo {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.1rem; font-weight: 600; letter-spacing: .06em;
+    }
+    .footer-logo span { color: var(--vermilion); }
+    .footer-copy {
+      font-family: 'DM Mono', monospace;
+      font-size: .6rem; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--ash);
+    }
+    .footer-copy a { color: var(--ash); text-decoration: none; transition: color .2s; }
+    .footer-copy a:hover { color: var(--vermilion); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--ink); color: var(--paper);
+      padding: .65rem 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: .68rem; letter-spacing: .1em;
+      transition: transform .3s; z-index: 600;
+      pointer-events: none; text-transform: uppercase;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 1.2rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; grid-template-rows: auto; }
+      .hero-divider { display: none; }
+      .hero-left { padding: 3rem 1.5rem 2rem; }
+      .hero-right { padding: 2rem 1.5rem 3rem; }
+      .filters-section { padding: 0 1.2rem; }
+      .catalog { padding: 2rem 1.2rem; }
+      footer { flex-direction: column; gap: 1rem; padding: 2rem 1.2rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo-wrap" href="index.html">
+    <img class="logo-img" src="data:image/jpeg;base64,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" alt="HAKUNA"/>
+    <div class="logo-type">
+      <div class="logo-jp">HAKUNNA SHOPP<em>!!</em></div>
+      <div class="logo-en">Anime · Figuras · Uruguay</div>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#inicio">inicio</a></li>
+    <li><a href="#coleccion">colección</a></li>
+    <li><a href="https://wa.me/59899000000" target="_blank">contacto</a></li>
+  </ul>
+  <button class="cart-btn" onclick="toggleCart()">
+    carrito <span id="cart-count">0</span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-left">
+    <div class="hero-label">Colección 2025</div>
+    <h1>
+      <span class="kanji">アニメ・フィギュア</span>
+      Figuras &amp;<br>Anime
+    </h1>
+    <p class="hero-tagline">
+      Coleccionables importados y originales de tus series favoritas.<br>
+      Envíos a todo Uruguay.
+    </p>
+  </div>
+  <div class="hero-divider"></div>
+  <div class="hero-right">
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num" id="stat-prods">—</div>
+        <div class="stat-label">productos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat-animes">—</div>
+        <div class="stat-label">series</div>
+      </div>
+    </div>
+    <div class="hero-quote">
+      <span style="font-style:normal;font-size:.82rem;color:rgba(255,255,255,.85);line-height:1.8;">
+        "¿Cuándo crees que la gente muere? ¿Cuando una bala atraviesa el corazón? No. ¿Cuando son víctimas de una enfermedad incurable? No. ¿Cuando beben una sopa hecha con una seta venenosa? ¡NO! Es cuando... ¡el mundo los olvida!"
+      </span>
+      <div style="margin-top:.7rem;font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);font-style:normal;">— Dr. Hiruluk · One Piece</div>
+    </div>
+  </div>
+</section>
+
+<!-- FILTERS -->
+<div class="filters-section">
+  <div class="filters-inner" id="filters-bar">
+    <span class="filter-group-label">filtrar</span>
+    <button class="filter-btn active" onclick="setFilter('todos','all',this)">todos</button>
+  </div>
+</div>
+
+<!-- CATALOG -->
+<section class="catalog" id="coleccion">
+  <div class="catalog-head">
+    <h2 id="catalog-title">Catálogo</h2>
+    <span class="catalog-meta" id="prod-count">—</span>
+  </div>
+  <div class="grid" id="grid">
+    <div class="state-msg">
+      <div class="icon">◌</div>
+      <p>Cargando...</p>
+    </div>
+  </div>
+</section>
+
+<!-- CART -->
+<div class="overlay" id="overlay" onclick="toggleCart()"></div>
+<div class="cart-panel" id="cart-panel">
+  <div class="cart-head">
+    <h3>Carrito</h3>
+    <button class="close-x" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cart-body"></div>
+  <div class="cart-foot">
+    <div class="cart-total-row">
+      <span>Total</span>
+      <span id="cart-total">$0</span>
+    </div>
+    <button class="checkout-btn" onclick="openCheckout()">Finalizar pedido</button>
+    <p class="mp-note">MercadoPago · Tarjeta · Débito · Efectivo</p>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-wrap" id="modal-wrap">
+  <div class="modal">
+    <div class="modal-eyebrow">— Confirmar pedido</div>
+    <h3>Tu pedido</h3>
+    <p class="modal-sub">Completá tus datos. Te contactamos por WhatsApp para coordinar el pago con MercadoPago.</p>
+    <div class="fg"><label>Nombre completo</label><input id="f-nombre" placeholder="Ej: Matías González"/></div>
+    <div class="fg"><label>Email</label><input id="f-email" type="email" placeholder="tu@email.com"/></div>
+    <div class="fg"><label>WhatsApp</label><input id="f-tel" placeholder="+598 99 000 000"/></div>
+    <div class="fg"><label>Dirección de envío</label><input id="f-dir" placeholder="Calle, número, ciudad"/></div>
+    <div class="order-summary" id="order-summary"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCheckout()">Cancelar</button>
+      <button class="btn-confirm" onclick="submitOrder()">Confirmar pedido</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">HAKUNNA SHOPP<span>!!</span></div>
+  <div class="footer-copy">
+    © 2025 HAKUNNA SHOPP — Uruguay &nbsp;·&nbsp;
+    <a href="login.html">admin</a>
+  </div>
+</footer>
+
+<!-- FIREBASE -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const app = initializeApp({
+    apiKey:"AIzaSyCE67aw3dXHe80OyxUPJ9vuiTkA4DoB3JE",
+    authDomain:"hakunastore-22432.firebaseapp.com",
+    projectId:"hakunastore-22432",
+    storageBucket:"hakunastore-22432.firebasestorage.app",
+    messagingSenderId:"380227604585",
+    appId:"1:380227604585:web:eb613f8bce797fb045d2f8"
+  });
+  const db = getFirestore(app);
+  window._allProducts = [];
+  window._activeFilter = { type:'all', value:'todos' };
+
+  onSnapshot(collection(db,"productos"), snap => {
+    window._allProducts = snap.docs.map(d => ({id:d.id,...d.data()}));
+    buildFilters();
+    renderGrid();
+    updateStats();
+  });
+
+  function buildFilters() {
+    const prods = window._allProducts;
+    const tipos  = [...new Set(prods.map(p=>p.categoria).filter(Boolean))];
+    const animes = [...new Set(prods.map(p=>p.anime).filter(Boolean))].sort();
+    const {type,value} = window._activeFilter;
+    const bar = document.getElementById('filters-bar');
+
+    let html = `<span class="filter-group-label">filtrar</span>
+      <button class="filter-btn ${value==='todos'?'active':''}" onclick="setFilter('todos','all',this)">todos</button>`;
+
+    if (tipos.length) {
+      html += `<div class="filter-sep"></div>`;
+      tipos.forEach(t => {
+        const a = type==='tipo' && value===t;
+        html += `<button class="filter-btn ${a?'active':''}" onclick="setFilter('${t}','tipo',this)">${t}</button>`;
+      });
+    }
+    if (animes.length) {
+      html += `<div class="filter-sep"></div>`;
+      animes.forEach(a => {
+        const active = type==='anime' && value===a;
+        html += `<button class="filter-btn ${active?'anime-active':''}" onclick="setFilter('${a.replace(/'/g,"\\'")}','anime',this)">${a}</button>`;
+      });
+    }
+    bar.innerHTML = html;
+  }
+
+  window.setFilter = function(value, type, btn) {
+    window._activeFilter = {type, value};
+    renderGrid();
+    buildFilters();
+    document.getElementById('catalog-title').textContent =
+      value==='todos' ? 'Catálogo' : value.charAt(0).toUpperCase()+value.slice(1);
+  };
+
+  window.renderGrid = function() {
+    const {type,value} = window._activeFilter;
+    const all = window._allProducts;
+    let list = all;
+    if (value!=='todos') {
+      if (type==='tipo')  list = all.filter(p => p.categoria===value);
+      if (type==='anime') list = all.filter(p => p.anime===value);
+    }
+    document.getElementById('prod-count').textContent =
+      list.length + ' producto' + (list.length!==1?'s':'');
+    const grid = document.getElementById('grid');
+    if (!list.length) {
+      grid.innerHTML = `<div class="state-msg"><div class="icon">◌</div><p>Sin productos en esta categoría</p></div>`;
+      return;
+    }
+    grid.innerHTML = list.map(p => `
+      <div class="card">
+        <div class="card-img">
+          ${p.imagen
+            ? `<img src="${p.imagen}" alt="${p.nombre}" loading="lazy"/>`
+            : `<span>${p.emoji||'🎭'}</span>`}
+          ${p.nuevo?'<span class="badge-new">nuevo</span>':''}
+          ${p.anime?`<span class="badge-anime">${p.anime}</span>`:''}
+        </div>
+        <div class="card-body">
+          <p class="card-cat">${p.categoria||'figura'}</p>
+          <h3 class="card-name">${p.nombre}</h3>
+          <div class="card-footer">
+            <span class="card-price">$${Number(p.precio).toLocaleString('es-UY')}</span>
+            <button class="add-btn" onclick="addToCart('${p.id}')">agregar</button>
+          </div>
+        </div>
+      </div>`).join('');
+  };
+
+  function updateStats() {
+    const prods  = window._allProducts;
+    const animes = new Set(prods.map(p=>p.anime).filter(Boolean));
+    document.getElementById('stat-prods').textContent  = prods.length || '—';
+    document.getElementById('stat-animes').textContent = animes.size || '—';
+  }
+</script>
+
+<!-- CART + CHECKOUT -->
+<script>
+  let cart = [];
+
+  window.addToCart = function(id) {
+    const p = (window._allProducts||[]).find(x=>x.id===id);
+    if (!p) return;
+    const ex = cart.find(i=>i.id===id);
+    if (ex) { ex.qty++; }
+    else {
+      cart.push({
+        id, nombre:p.nombre, precio:Number(p.precio),
+        anime:p.anime||'',
+        imagen:p.imagen||null,
+        emoji:p.emoji||'🎭',
+        qty:1
+      });
+    }
+    updateCartUI(); openCart(); showToast('agregado — '+p.nombre);
+  };
+  window.changeQty = function(id,delta) {
+    const item = cart.find(i=>i.id===id); if(!item) return;
+    item.qty += delta;
+    if (item.qty<=0) cart = cart.filter(i=>i.id!==id);
+    updateCartUI();
+  };
+  window.removeItem = function(id) { cart = cart.filter(i=>i.id!==id); updateCartUI(); };
+
+  function updateCartUI() {
+    document.getElementById('cart-count').textContent = cart.reduce((s,i)=>s+i.qty,0);
+    const total = cart.reduce((s,i)=>s+i.precio*i.qty,0);
+    document.getElementById('cart-total').textContent = '$'+total.toLocaleString('es-UY');
+    const body = document.getElementById('cart-body');
+    if (!cart.length) {
+      body.innerHTML = '<div class="cart-empty-msg"><span class="icon">◌</span>carrito vacío</div>';
+      return;
+    }
+    body.innerHTML = cart.map(i=>`
+      <div class="cart-item">
+        <div class="ci-emoji">${i.imagen ? `<img src="${i.imagen}" alt="${i.nombre}"/>` : i.emoji}</div>
+        <div class="ci-info">
+          <div class="ci-name">${i.nombre}</div>
+          ${i.anime?`<div class="ci-anime">${i.anime}</div>`:''}
+          <div class="ci-price">$${(i.precio*i.qty).toLocaleString('es-UY')}</div>
+          <div class="ci-qty">
+            <button class="qty-btn" onclick="changeQty('${i.id}',-1)">−</button>
+            <span class="qty-num">${i.qty}</span>
+            <button class="qty-btn" onclick="changeQty('${i.id}',1)">+</button>
+          </div>
+        </div>
+        <button class="ci-remove" onclick="removeItem('${i.id}')">✕</button>
+      </div>`).join('');
+  }
+
+  let cartOpen = false;
+  window.toggleCart = function() {
+    cartOpen = !cartOpen;
+    document.getElementById('cart-panel').classList.toggle('open',cartOpen);
+    document.getElementById('overlay').classList.toggle('open',cartOpen);
+  };
+  window.openCart = function() {
+    cartOpen = true;
+    document.getElementById('cart-panel').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+  };
+
+  window.openCheckout = function() {
+    if (!cart.length) { showToast('el carrito está vacío'); return; }
+    const total = cart.reduce((s,i)=>s+i.precio*i.qty,0);
+    const lines = cart.map(i=>`${i.esImagen?'🖼️':i.imgOrEmoji} ${i.nombre}${i.anime?' · '+i.anime:''} ×${i.qty} — $${(i.precio*i.qty).toLocaleString('es-UY')}`).join('<br>');
+    document.getElementById('order-summary').innerHTML = `${lines}<br><br><strong>Total: $${total.toLocaleString('es-UY')}</strong>`;
+    document.getElementById('modal-wrap').classList.add('open');
+    cartOpen=false;
+    document.getElementById('cart-panel').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+  };
+  window.closeCheckout = function() { document.getElementById('modal-wrap').classList.remove('open'); };
+
+  window.submitOrder = function() {
+    const nombre = document.getElementById('f-nombre').value.trim();
+    const email  = document.getElementById('f-email').value.trim();
+    const tel    = document.getElementById('f-tel').value.trim();
+    const dir    = document.getElementById('f-dir').value.trim();
+    if (!nombre||!email||!tel||!dir) { showToast('completá todos los campos'); return; }
+    const total = cart.reduce((s,i)=>s+i.precio*i.qty,0);
+    const items = cart.map(i=>`• ${i.nombre}${i.anime?' ('+i.anime+')':''} x${i.qty} = $${(i.precio*i.qty).toLocaleString('es-UY')}`).join('\n');
+    const msg = encodeURIComponent(`🎌 *Pedido HAKUNA!!*\n\n${items}\n\n*Total: $${total.toLocaleString('es-UY')}*\n\n👤 ${nombre}\n📧 ${email}\n📍 ${dir}`);
+    // ⚠️ Cambiá 59899000000 por tu número de WhatsApp
+    window.open(`https://wa.me/59899000000?text=${msg}`,'_blank');
+    cart=[]; updateCartUI(); closeCheckout();
+    showToast('pedido enviado — te contactamos pronto');
+  };
+
+  window.showToast = function(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2800);
+  };
+  updateCartUI();
+</script>
+
+</body>
+</html>
